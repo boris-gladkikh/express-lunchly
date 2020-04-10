@@ -120,17 +120,24 @@ router.post("/:id/add-reservation/", async function (req, res, next) {
     const numGuests = req.body.numGuests;
     const notes = req.body.notes;
 
+    console.log("this is our request body and variables", req.body,startAt,numGuests,notes)
+
+
     const reservation = new Reservation({
       customerId,
       startAt,
       numGuests,
       notes,
     });
+    // console.log("this is reservation", reservation)
     await reservation.save();
 
     return res.redirect(`/${customerId}/`);
   } catch (err) {
+    // console.log("this is our error", err);
+
     return next(err);
+
   }
 });
 
