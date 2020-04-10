@@ -17,5 +17,14 @@
     "prg": "^0.1.2"
   },
   "keywords": [],
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gladkillmusic/express-lunchly.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gladkillmusic/express-lunchly/issues"
+  },
+  "homepage": "https://github.com/gladkillmusic/express-lunchly#readme",
   "description": ""
 }

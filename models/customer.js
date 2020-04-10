@@ -19,26 +19,26 @@ class Customer {
 
   static async all() {
     const results = await db.query(
-      `SELECT id, 
-         first_name AS "firstName",  
-         last_name AS "lastName", 
-         phone, 
+      `SELECT id,
+         first_name AS "firstName",
+         last_name AS "lastName",
+         phone,
          notes
        FROM customers
        ORDER BY last_name, first_name`
     );
-    return results.rows.map(c => new Customer(c));
+    return results.rows.map((c) => new Customer(c));
   }
 
   /** get a customer by ID. */
 
   static async get(id) {
     const results = await db.query(
-      `SELECT id, 
-         first_name AS "firstName",  
-         last_name AS "lastName", 
-         phone, 
-         notes 
+      `SELECT id,
+         first_name AS "firstName",
+         last_name AS "lastName",
+         phone,
+         notes
         FROM customers WHERE id = $1`,
       [id]
     );
@@ -81,32 +81,54 @@ class Customer {
   }
 
   //search by customer name - static method
-
   static async search(searchName) {
     let result = await db.query(
-      `SELECT id, 
-      first_name AS "firstName",  
-      last_name AS "lastName", 
-      phone, 
+      `SELECT id,
+      first_name AS "firstName",
+      last_name AS "lastName",
+      phone,
       notes
     FROM customers
     WHERE first_name ilike $1 or last_name ilike $1
     ORDER BY last_name, first_name`,
-    [searchName]
+      [searchName]
     );
     if (result.rows.length === 0) {
       const err = new Error(`No customers found matching ${searchName}`);
       err.status = 404;
       throw err;
     } else {
-      return result.rows.map(c => new Customer(c));
-
+      return result.rows.map((c) => new Customer(c));
     }
-
   }
 
+  /** find all customers. */
+
+  static async getBest10() {
+    const customerResults = await db.query(
+      `SELECT c.id,
+           c.first_name AS "firstName",
+           c.last_name AS "lastName",
+           c.phone,
+           c.notes,
+           COUNT(*) as count
+         FROM customers as c
+         JOIN reservations as r
+         ON c.id = r.customer_id
+         GROUP BY c.id
+         ORDER BY count DESC
+         LIMIT 10`
+    );
+    return customerResults.rows.map((c) => new Customer(c));
+  }
 }
 
-
+// `SELECT id,
+//            customer_id AS "customerId",
+//            num_guests AS "numGuests",
+//            start_at AS "startAt",
+//            notes AS "notes"
+//          FROM reservations
+//          WHERE customer_id = $1`
 
 module.exports = Customer;
