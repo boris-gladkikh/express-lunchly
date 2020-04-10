@@ -11,9 +11,25 @@ class Customer {
     this.firstName = firstName;
     this.lastName = lastName;
     this.phone = phone;
-    this.notes = notes;
-    this.fullName = `${this.firstName} ${this.lastName}`;
+    this._notes = notes;
   }
+
+  //============ GETTERS / SETTERS =================
+
+  get notes() {
+    return this._notes;
+  }
+
+  set notes(val) {
+    if (!val) this._notes = "";
+    else this._notes = val;
+  }
+
+  get fullName() {
+    return this.getFullName();
+  }
+
+  //============ END OF GETTERS / SETTERS ==========
 
   /** find all customers. */
 
@@ -93,16 +109,16 @@ class Customer {
     ORDER BY last_name, first_name`,
       [searchName]
     );
-    if (result.rows.length === 0) {
-      const err = new Error(`No customers found matching ${searchName}`);
-      err.status = 404;
-      throw err;
-    } else {
-      return result.rows.map((c) => new Customer(c));
-    }
+    // if (result.rows.length === 0) {
+    //   const err = new Error(`No customers found matching ${searchName}`);
+    //   err.status = 200;
+    //   throw err;
+    // } else {
+    return result.rows.map((c) => new Customer(c));
+    // }
   }
 
-  /** find all customers. */
+  /** find top 10 customers (by # of reservations). */
 
   static async getBest10() {
     const customerResults = await db.query(
@@ -121,14 +137,10 @@ class Customer {
     );
     return customerResults.rows.map((c) => new Customer(c));
   }
-}
 
-// `SELECT id,
-//            customer_id AS "customerId",
-//            num_guests AS "numGuests",
-//            start_at AS "startAt",
-//            notes AS "notes"
-//          FROM reservations
-//          WHERE customer_id = $1`
+  getFullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
 
 module.exports = Customer;
