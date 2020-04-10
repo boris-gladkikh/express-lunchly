@@ -12,6 +12,7 @@ class Customer {
     this.lastName = lastName;
     this.phone = phone;
     this.notes = notes;
+    this.fullName = `${this.firstName} ${this.lastName}`;
   }
 
   /** find all customers. */
@@ -78,6 +79,34 @@ class Customer {
       );
     }
   }
+
+  //search by customer name - static method
+
+  static async search(searchName) {
+    let result = await db.query(
+      `SELECT id, 
+      first_name AS "firstName",  
+      last_name AS "lastName", 
+      phone, 
+      notes
+    FROM customers
+    WHERE first_name ilike $1 or last_name ilike $1
+    ORDER BY last_name, first_name`,
+    [searchName]
+    );
+    if (result.rows.length === 0) {
+      const err = new Error(`No customers found matching ${searchName}`);
+      err.status = 404;
+      throw err;
+    } else {
+      return result.rows.map(c => new Customer(c));
+
+    }
+
+  }
+
 }
+
+
 
 module.exports = Customer;
